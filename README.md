@@ -12,8 +12,8 @@ Arduino lib:
 - [esp8266 card library](https://arduino-esp8266.readthedocs.io/en/2.4.1/installing.html) 
 
 ## System diagram
-![diagram](diagram1.png)
-[More visual version if you didn't understand.](diagram2.png)
+![diagram](diagram1.png)  
+[Different visual version if you didn't understand.](diagram2.png)
 
 # How to code
 We have two **arduino ide** project files in our main folder. The **sensor.ino** is for accessing data on the sensor. Your code simply goes in `sensor_code()` function, use it like it's `void loop()` .  It must get the instant data and return it as a string so we can call it in  **main.ino**  and send it to localserver. things that normally goes on `void setup()` still goes to `void setup()` on the **main.ino**. But define your variables that you'll use in sensor_code in **sensor.ino**.
