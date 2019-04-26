@@ -1,4 +1,4 @@
-/* ESP8266 TO PY: MAIN
+/* ESP8266 TO PY: LOCAL
  * Written by Junicchi
  * https://github.com/Kebablord 
  */
@@ -7,19 +7,15 @@
 #include <ESP8266mDNS.h>
 #include <WiFiClient.h>
 
-/* SET THE WIFI DETAILS CONNECT TO */
-const char* ssid = "wifi_name";
-const char* password = "password";
-
-/* OUR SERVER'S PORT, 80 FOR DEFAULT */
+// OUR SERVER'S PORT, 80 FOR DEFAULT
 WiFiServer server(80);
+WiFiClient client;
+String rule,s;
 
-void setup(void) {
-  Serial.begin(115200);
-
-// Connect to wifi network
+void start(String ssid, String pass){
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password); 
+  WiFi.begin(ssid.c_str(),pass.c_str());
+
   Serial.println("");
 // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
@@ -46,10 +42,7 @@ void setup(void) {
   MDNS.addService("http", "tcp", 9020);
 }
 
-
-void loop(void) {
-
-// WAIT FOR THE REQUEST
+void waitUntilNewReq(){
   WiFiClient client = server.available();
   if (!client) {
     return;
@@ -74,29 +67,15 @@ void loop(void) {
   Serial.println(req);
   client.flush();
 
-/* _____ ______ _   _ _____ _____ _   _  _____ 
-  / ____|  ____| \ | |  __ \_   _| \ | |/ ____|
- | (___ | |__  |  \| | |  | || | |  \| | |  __ 
-  \___ \|  __| | . ` | |  | || | | . ` | | |_ |
-  ____) | |____| |\  | |__| || |_| |\  | |__| |
- |_____/|______|_| \_|_____/_____|_| \_|\_____|
-     CALLING THE FUNCTION & SENDING THE DATA   */
-/*      YOU MAY ENTER YOUR OWN CODE BELOW     */
+  rule = req.substring(1);
 
-  String s;
-// this variable req is our alt-page request. 
-// An example: in https://192.1.1/test our req would "/test". As default it's: "/".
-  if (req == "/") {
-    IPAddress ip = WiFi.localIP();
-    String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-    //This is the HTTP request protocol code. We use "200 OK" for sending data.
-    s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n ";
-    String our_data = sensor_code();
-    //Finally we added our data to protocol code.
-    s += our_data;
-    Serial.println("Sending 200");
-  }
-      
-client.print(s); //SEND :3
-Serial.println("Done with client");
+  IPAddress ip = WiFi.localIP();
+  String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
+  s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n ";
+}
+
+void returnThis(String final_data){
+  s += final_data;
+  client.print(s);
+  Serial.println("Done with client\nReturned to localhost this: "+s);
 }
