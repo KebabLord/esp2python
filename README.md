@@ -1,4 +1,5 @@
-# ESP8266 TO PYTHON
+
+# ESP8266 & PYTHON FOR NOOBS
 This project helps you to get any sensor data from esp8266 to python, as a variable.
 
 # Theory
@@ -16,22 +17,37 @@ Arduino lib:
 [Different visual version if you didn't understand.](diagram2.png)
 
 # How to code
-We have two **arduino ide** project files in our main folder. The **sensor.ino** is for accessing data on the sensor. Your code simply goes in `sensor_code()` function, use it like it's `void loop()` .  It must get the instant data and return it as a string so we can call it in  **main.ino**  and send it to localserver. things that normally goes on `void setup()` still goes to `void setup()` on the **main.ino**. But define your variables that you'll use in sensor_code in **sensor.ino**.
+I just over-simplified a complex code while compressing everything into 3 function. You have 'default.ino' as a template. Everything is so easy. You're just normally writing the sensor code as always, using this 3 function to send / control / return.
 
-The **main.ino** is where we connect to wifi, create the localhost, run the function we defined in `sensor.ino` and send it to localhost. You have to configure wifi settings in it to make module be able to connect to wifi. After everything is done your sketches are ready, upload them. Arduino IDE will compile both of two files into one sketch when flashing. While flashing; open serialport at 115200, and wait for the sketch to be uploaded, it'll print you the IP of the localserver, we need it for our python code.  After that, in python code, enter your localhost and simply run it. **To summarize;**
+## start( ssid, pass)
+You simply enter your wifi details into this function and it starts the connection, ssid is your wifi username, pass is your wifi password. In the default.ino, I put it in first line of `void setup()` so it esp can directly connect to internet when opened.
 
- 1. Write your code to read sensor data in the function `sensor_code()` in **sensor.ino**  `python`
- 2. Configure your wifi settings connect to, in **main.ino**
-3.  While uploading the code, open serial port. The localhost's IP will be posted when flashing is done, localhosts IP changes by wifi to wifi, not session to session.
-4. Define the URL variable in python code with localhost's IP, as an example: https://192.123.132
-5. Run or modify the code, you got the data now :3
+## waitUntilNewReq( )
+ It's just a time block that waits for a request. It gives you the full control over python. With this: code is not running on his own, it'll wait a python request so it can check the sensor data or run.
+
+## returnThis(  )
+As finally, you can return the desired data (or simply sensor data) to localhost server, python will read whatever returned with returnThis(), you can also look into python code.
+
+## String rule
+We also have a string variable called `rule`, it's simply:
+https://example.com/**thistext**
+
+So you can use `rule` in your if statements or use it to rule the system.  **To summarize** you can interact the system 
+
+    if (rule=="ledOneOpen"){
+    digitalWrite(LED,HIGH);
+    }
+
+While uploading the code, open serial port. The localhost's IP will be printed in serialport when flashing is done and ESP is connected. Don't forget, localhosts IP changes by wifi to wifi, not session to session.
+Finally define the URL variable in python code with localhost's IP, as an example: https://192.123.132
+
+*Run or modify the code, you got the data now :3*
 
 # Addition
  - The sensor data getting code *(aka. sensor_code function)* only runs when python sends a request.
 - It takes only 0.5 seconds max totally (sending request & reading return) :3
-- **main.ino** and **sensor.ino** must be in same "main" folder so arduino ide can compile both of them into one.
  - The **main.ino** is fork of [mDNSserver example](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266mDNS) by [Ivan Grokhotkov](https://github.com/igrr) 
 
 ### Deficiencies
- - The code is a bit complex, will be simplified.
+ - ~~The code is a bit complex, will be simplified.~~
  - Needs a tutorial video
