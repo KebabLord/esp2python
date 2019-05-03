@@ -1,30 +1,28 @@
-/* PING + ESP TO PY: MAIN
+/* ESP8266 TO PY: LOCAL
  * Written by Junicchi
  * https://github.com/Kebablord 
- */
 
-/* NOTE! This example is for Nodemcu or modules with more than 1 GPIO */
+ * MAP
+ - start(ssid,password)---> Starts the connection with given username and password
+ - waitUntilNewReq() -----> Waits until a request is received from python
+ - returnThisInt(data) ---> sends your Integer data to localhost
+ - returnThisStr(data) ---> sends your String data to localhost
+ - getPath() -------------> gets the request's path as string, ex: https://192.113.133/here -> "/here"
+*/
 
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <WiFiClient.h>
 
-/* SET THE WIFI DETAILS CONNECT TO */
-const char* ssid = "wifi_name";
-const char* password = "password";
-/* PORT */
+// OUR SERVER'S PORT, 80 FOR DEFAULT
 WiFiServer server(80);
+WiFiClient client;
+String rule;
 
-void setup(void) {
-/* !SETTING THE GPIO PINS OF THE PING SENSOR!*/
-  pinMode(4, OUTPUT); // D2 PIN
-  pinMode(5, INPUT);  // D1 PIN
-  
-  Serial.begin(115200);
-
-// Connect to wifi network
+void start(String ssid, String pass){
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password); 
+  WiFi.begin(ssid.c_str(),pass.c_str());
+
   Serial.println("");
 // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
@@ -48,14 +46,13 @@ void setup(void) {
   server.begin();
   Serial.println("TCP server started");
 // Add service to MDNS-SD
-  MDNS.addService("http", "tcp", 9020);
+  MDNS.addService("http", "tcp", 80);
 }
 
+bool isReqCame = false;
 
-void loop(void) {
-
-// WAIT FOR THE REQUEST
-  WiFiClient client = server.available();
+void CheckNewReq(){
+  client = server.available();
   if (!client) {
     return;
   }
@@ -77,29 +74,29 @@ void loop(void) {
   req = req.substring(addr_start + 1, addr_end);
   Serial.print("Requested Path: ");
   Serial.println(req);
+  
+  rule = req; 
+  isReqCame = true;
+  
   client.flush();
+}
+void waitUntilNewReq(){
+  do {CheckNewReq();} while (!isReqCame);
+  isReqCame = false;
+}
 
-/* _____ ______ _   _ _____ _____ _   _  _____ 
-  / ____|  ____| \ | |  __ \_   _| \ | |/ ____|
- | (___ | |__  |  \| | |  | || | |  \| | |  __ 
-  \___ \|  __| | . ` | |  | || | | . ` | | |_ |
-  ____) | |____| |\  | |__| || |_| |\  | |__| |
- |_____/|______|_| \_|_____/_____|_| \_|\_____|
-     CALLING THE FUNCTION & SENDING THE DATA   */
-
+void returnThisStr(String final_data){
   String s;
+  //HTTP Protocol code.
+  s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+  s += final_data; //Our final raw data to return
+  client.print(s);
+  Serial.println("Returned to client.");
+}
+void returnThisInt(int final_data){
+  returnThisStr(String(final_data));
+}
 
-  if (req == "/") {
-    IPAddress ip = WiFi.localIP();
-    String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-
-    s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n ";
-    String our_data = sensor_code();
-    //Finally we added our data to protocol code.
-    s += our_data;
-    Serial.println("Sending 200");
-  }
-      
-client.print(s); //SEND :3
-Serial.println("Done with client");
+String getPath(){
+  return rule;
 }

@@ -1,7 +1,14 @@
 /* ESP8266 TO PY: LOCAL
  * Written by Junicchi
  * https://github.com/Kebablord 
- */
+
+ * MAP
+ - start(ssid,password)---> Starts the connection with given username and password
+ - waitUntilNewReq() -----> Waits until a request is received from python
+ - returnThisInt(data) ---> sends your Integer data to localhost
+ - returnThisStr(data) ---> sends your String data to localhost
+ - getPath() -------------> gets the request's path as string, ex: https://192.113.133/here -> "/here"
+*/
 
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
@@ -10,7 +17,7 @@
 // OUR SERVER'S PORT, 80 FOR DEFAULT
 WiFiServer server(80);
 WiFiClient client;
-String rule,s;
+String rule;
 
 void start(String ssid, String pass){
   WiFi.mode(WIFI_STA);
@@ -39,11 +46,13 @@ void start(String ssid, String pass){
   server.begin();
   Serial.println("TCP server started");
 // Add service to MDNS-SD
-  MDNS.addService("http", "tcp", 9020);
+  MDNS.addService("http", "tcp", 80);
 }
 
-void waitUntilNewReq(){
-  WiFiClient client = server.available();
+bool isReqCame = false;
+
+void CheckNewReq(){
+  client = server.available();
   if (!client) {
     return;
   }
@@ -65,17 +74,29 @@ void waitUntilNewReq(){
   req = req.substring(addr_start + 1, addr_end);
   Serial.print("Requested Path: ");
   Serial.println(req);
+  
+  rule = req; 
+  isReqCame = true;
+  
   client.flush();
-
-  rule = req.substring(1);
-
-  IPAddress ip = WiFi.localIP();
-  String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-  s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n ";
+}
+void waitUntilNewReq(){
+  do {CheckNewReq();} while (!isReqCame);
+  isReqCame = false;
 }
 
-void returnThis(String final_data){
-  s += final_data;
+void returnThisStr(String final_data){
+  String s;
+  //HTTP Protocol code.
+  s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+  s += final_data; //Our final raw data to return
   client.print(s);
-  Serial.println("Done with client\nReturned to localhost this: "+s);
+  Serial.println("Returned to client.");
+}
+void returnThisInt(int final_data){
+  returnThisStr(String(final_data));
+}
+
+String getPath(){
+  return rule;
 }
