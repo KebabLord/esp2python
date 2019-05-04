@@ -1,6 +1,7 @@
-
+![diagram](banner.jpg)
 # ESP8266 & PYTHON FOR NOOBS
-This project helps you to get any sensor data from esp8266 to python, as a variable. And python command to Esp
+This project helps you to get any data from esp8266 to python, as a variable. And python command to Esp. [Tutorial here.](https://www.instructables.com/id/ESP8266-and-Python-Communication-ForNoobs/)
+
 
 # Theory
 Our esp connects to wifi and creates a localhost. Everytime our python sends a request to that localhost, our module runs the code and gets the instant sensor data, then publishes it to localhost as an HTML page. Finally python reads that data on the html localhost page and decodes it to integer or list (if the output is more than one).
@@ -53,4 +54,4 @@ You'll need this when reading the data with python, an example: https://192.123.
 
 ### Deficiencies
  - ~~The code is a bit complex, will be simplified.~~
- - Needs a tutorial video
+ - ~~Needs a tutorial video~~ [(Tutorial here)](https://www.instructables.com/id/ESP8266-and-Python-Communication-ForNoobs/)

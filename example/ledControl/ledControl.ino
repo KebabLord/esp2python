@@ -15,11 +15,10 @@
 #define LED 4
 
 void setup(){
+  Serial.begin(9600);
   start("Username","Password"); // Wifi details connec to
 
   pinMode(LED,OUTPUT);
-  
-  Serial.begin(9600);
 }
 
 void loop(){
