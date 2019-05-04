@@ -12,12 +12,11 @@ long duration;
 int distance;
 
 void setup(){
+  Serial.begin(9600);
   start("USERNAME","PASSWORD");  // Wifi details connect to
   
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
-  
-  Serial.begin(9600);
 }
 
 void loop(){

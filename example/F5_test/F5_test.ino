@@ -9,8 +9,8 @@
 int indeks = 0;
 
 void setup(){
-  start("USERNAME","PASSWORD");  // Wifi details connect to
   Serial.begin(9600);
+  start("USERNAME","PASSWORD");  // Wifi details connect to
 }
 
 void loop(){
