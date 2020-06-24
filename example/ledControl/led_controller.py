@@ -10,9 +10,9 @@ def sendRequest(url):
 # Example usage
 while True:
 	answer = input(""" To control the led, type "ON" or "OFF": """)
-	if (answer="ON"):
+	if (answer=="ON"):
 		sendRequest(root_url+"/OPEN_LED")
 		print("Opened!\n\n")
-	if (answer="OFF"):
+	if (answer=="OFF"):
 		sendRequest(root_url+"/CLOSE_LED")
 		print("Closed!\n\n")
