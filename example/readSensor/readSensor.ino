@@ -2,7 +2,9 @@
  * Written by Junicchi
  * https://github.com/Kebablord 
  *
-/* This example is written for Nodemcu Modules */
+ * Reads the value of Ping Sensor and returns it to Python
+ * This example is written for Nodemcu Cards 
+ */
 
 #include "ESP_MICRO.h" // importing our library
 

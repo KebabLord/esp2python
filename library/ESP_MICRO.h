@@ -1,20 +1,20 @@
-/* ESP8266 TO PY: LOCAL
+/* ESP8266 TO PY: THE MICRO LIBRARY
  * Written by Junicchi
- * https://github.com/Kebablord 
+ * https://github.com/Kebablord
 
  * MAP
- - start(ssid,password)---> Starts the connection with given username and password
- - waitUntilNewReq() -----> Waits until a request is received from python
- - returnThisInt(data) ---> sends your Integer data to localhost
- - returnThisStr(data) ---> sends your String data to localhost
- - getPath() -------------> gets the request's path as string, ex: https://192.113.133/here -> "/here"
+ - start(ssid,password)---> Connects to wifi with given username and password
+ - waitUntilNewReq() -----> Waits until a new python request come, checks for requests regularly
+ - returnThisInt(data) ---> sends your Integer data to localhost (python)
+ - returnThisStr(data) ---> sends your String data to localhost (python)
+ - getPath() -------------> gets the request path as string, ex: https://192.113.133/ledON -> "ledON"
 */
 
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <WiFiClient.h>
 
-// OUR SERVER'S PORT, 80 FOR DEFAULT
+// PORT
 WiFiServer server(80);
 WiFiClient client;
 String rule;
@@ -74,10 +74,9 @@ void CheckNewReq(){
   req = req.substring(addr_start + 1, addr_end);
   Serial.print("Requested Path: ");
   Serial.println(req);
-  
-  rule = req; 
+
+  rule = req;
   isReqCame = true;
-  
   client.flush();
 }
 void waitUntilNewReq(){
